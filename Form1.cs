@@ -14,10 +14,13 @@ namespace ASE_Programming_Language
         public Interpreter interpreter = new Interpreter();
         public List<ICommand> commandsInLoop;
         public object command;
+        private List<string> commandHistory = new List<string>();
+        private int currentHistoryIndex = -1;
 
         public Form1()
         {
             InitializeComponent();
+            textBox1.KeyDown += TextBox1_KeyDown;
 
             Button drawButton = new Button
             {
@@ -59,16 +62,7 @@ namespace ASE_Programming_Language
                             {
                                 commands.Add(new CommandDrawCircle(size.ToString(), cx, cy)); // Assuming these are the correct parameters
                             }
-                            break;
-                        case "draw triangle":
-                            if (commandParts.Length == 7 &&
-                                int.TryParse(commandParts[1], out int x1) && int.TryParse(commandParts[2], out int y1) &&
-                                int.TryParse(commandParts[3], out int x2) && int.TryParse(commandParts[4], out int y2) &&
-                                int.TryParse(commandParts[5], out int x3) && int.TryParse(commandParts[6], out int y3))
-                            {
-                                commands.Add(new CommandDrawTriangle(x1, y1, x2, y2, x3, y3));
-                            }
-                            break;
+                            break;   
                     }
                 }
                 return new CommandMultiLine(commands);
@@ -149,6 +143,8 @@ namespace ASE_Programming_Language
 
             ICommand command = ParseCommand(commandText);
 
+            commandHistory.Insert(0, commandText);
+
             int loopCount = 0; // Declare loopCount here for broader scope
             if (parts.Length >= 2)
             {
@@ -202,6 +198,14 @@ namespace ASE_Programming_Language
                     command.Execute(interpreter);
 
                 }
+            }
+            if (string.IsNullOrWhiteSpace(commandText)) MessageBox.Show("No command entered.");
+
+            // Add the executed command to the command history
+            if (!string.IsNullOrWhiteSpace(commandText))
+            {
+                commandHistory.Insert(0, commandText);
+                currentHistoryIndex = -1; // Reset the history index after executing a new command
             }
 
             else
@@ -470,6 +474,33 @@ namespace ASE_Programming_Language
         }
 
         private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void TextBox1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Up)
+            {
+                // Navigate up through command history
+                if (currentHistoryIndex < commandHistory.Count - 1)
+                {
+                    currentHistoryIndex++;
+                    textBox1.Text = commandHistory[currentHistoryIndex];
+                }
+            }
+            else if (e.KeyCode == Keys.Down)
+            {
+                // Navigate down through command history
+                if (currentHistoryIndex >= 0)
+                {
+                    currentHistoryIndex--;
+                    textBox1.Text = (currentHistoryIndex >= 0) ? commandHistory[currentHistoryIndex] : "";
+                }
+            }
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
