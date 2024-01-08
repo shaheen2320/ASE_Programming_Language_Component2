@@ -139,10 +139,6 @@ namespace ASE_Programming_Language
             
             ClearPictureBox(); // Clear the PictureBox before executing commands
 
-                // ... rest of the code ...
-            
-
-
             string commandText = textBox1.Text; 
             string input = textBox1.Text; 
             string[] parts = input.Split(' ');
@@ -379,7 +375,7 @@ namespace ASE_Programming_Language
         {
 
         }
-        private void DrawConcentricCircles(int baseSize)
+        public void DrawConcentricCircles(int baseSize)
         {
             using (Graphics graphics = pictureBox1.CreateGraphics())
             {
@@ -395,7 +391,7 @@ namespace ASE_Programming_Language
                 }
             }
         }
-        private List<string> CheckSyntax(string[] lines)
+        public List<string> CheckSyntax(string[] lines)
         {
             List<string> errors = new List<string>();
             for (int i = 0; i < lines.Length; i++)
@@ -409,12 +405,28 @@ namespace ASE_Programming_Language
 
                 switch (parts[0].ToLower())
                 {
+                    case "set":
+                        if (!(parts.Length == 3 && parts[1] == "loop" && int.TryParse(parts[2], out _)))
+                            errors.Add($"Syntax error on line {i + 1}: Invalid 'set loop' command.");
+                        break;
 
+                    case "circle":
+                        if (parts.Length > 2 && parts[1] == "size")
+                            errors.Add($"Syntax error wrong command for circle .");
+
+                        break;
                     case "if":
                         if (!(parts.Length >= 4 && parts[1] == "size" && parts[2] == ">" && int.TryParse(parts[3], out _)))
                             errors.Add($"Syntax error on line {i + 1}: Invalid 'if' condition.");
                         break;
-
+                    case "print":
+                        if (parts.Length < 2)
+                            errors.Add($"Syntax error on line {i + 1}: 'print' command requires additional text.");
+                        break;
+                    case "endif":
+                        if (parts.Length != 1)
+                            errors.Add($"Syntax error on line {i + 1}: 'endif' command should not have additional parameters.");
+                        break;
 
                     default:
                         errors.Add($"Syntax error on line {i + 1}: Unknown command '{parts[0]}'.");
@@ -457,13 +469,10 @@ namespace ASE_Programming_Language
             pictureBox1.Refresh(); // This will clear the content of the PictureBox
         }
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
 
-
-
-
-
-
-
+        }
     }
 
 }
