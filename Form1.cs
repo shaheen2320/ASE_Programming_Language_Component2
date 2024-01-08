@@ -4,9 +4,14 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-
+/// <summary>
+/// Main namespace for the program.
+/// </summary>
 namespace ASE_Programming_Language
 {
+    /// <summary>
+    /// form class for the program.
+    /// </summary>
     public partial class Form1 : Form
     {
         private int number;
@@ -17,6 +22,9 @@ namespace ASE_Programming_Language
         private List<string> commandHistory = new List<string>();
         private int currentHistoryIndex = -1;
 
+        // <summary>
+        /// Constructor of the main form.
+        /// </summary>
         public Form1()
         {
             InitializeComponent();
@@ -31,7 +39,9 @@ namespace ASE_Programming_Language
             Controls.Add(drawButton);
             commandsInLoop = new List<ICommand>();
         }
-
+        // <summary>
+        /// Parses command returns the corresponding ICommand.
+        /// </summary>
         public ICommand ParseCommand(string commandText)
         {
             // checking multi-line commands
@@ -62,7 +72,7 @@ namespace ASE_Programming_Language
                             {
                                 commands.Add(new CommandDrawCircle(size.ToString(), cx, cy)); // Assuming these are the correct parameters
                             }
-                            break;   
+                            break;
                     }
                 }
                 return new CommandMultiLine(commands);
@@ -80,10 +90,10 @@ namespace ASE_Programming_Language
                     return new CommandVariableAssignment(variableName, value);
                 }
             }
-            
+
             else if (CommandParts.Length == 2 && CommandParts[0].Trim().ToLower() == "circle")
             {
-                
+
                 int defaultX = 0;
                 int defaultY = 0;
                 return new CommandDrawCircle(CommandParts[1].Trim(), defaultX, defaultY);
@@ -115,7 +125,7 @@ namespace ASE_Programming_Language
                     return new CommandLoop(loopCount, commands);
                 }
             }
-     
+
             return null;
         }
         public void pictureBox1_Click(object sender, EventArgs e)
@@ -128,15 +138,20 @@ namespace ASE_Programming_Language
 
         }
 
+        /// <summary>
+        /// Handles the click event of the main execution button.
+        /// </summary>
+        /// <param name="e">event argument </param>
+        /// <param name="sender">sender of the event</param>
         public void button1_Click(object sender, EventArgs e)
         {
-            
+
             ClearPictureBox(); // Clear the PictureBox before executing commands
 
-            string commandText = textBox1.Text; 
-            string input = textBox1.Text; 
+            string commandText = textBox1.Text;
+            string input = textBox1.Text;
             string[] parts = input.Split(' ');
-           
+
             ExecuteMultiLineCommands(commandText);
             string[] lines = commandText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries); // Split the command text into lines
             List<string> errors = CheckSyntax(lines);
@@ -145,12 +160,12 @@ namespace ASE_Programming_Language
 
             commandHistory.Insert(0, commandText);
 
-            int loopCount = 0; // Declare loopCount here for broader scope
+            int loopCount = 0; // Declare loopCount broader scope like padding space
             if (parts.Length >= 2)
             {
                 if (parts[0] == "set" && parts[1] == "loop" && int.TryParse(parts[2], out loopCount))
                 {
-                    // Set loop count variable
+                    // Set variable for loop counts
                     interpreter.SetVariable("loopCount", loopCount);
                 }
                 else if (parts[0] == "circle" && parts[1] == "loop")
@@ -167,10 +182,8 @@ namespace ASE_Programming_Language
                         // Add circle command for each iteration
                         using (Graphics graphics = pictureBox1.CreateGraphics())
                         {
-                            // Draw the circle at the current position
-                            graphics.DrawEllipse(Pens.Black, x, y, radius * 2, radius * 2);
 
-                            // Increment position for the next circle
+                            graphics.DrawEllipse(Pens.Black, x, y, radius * 2, radius * 2);
                             x += xIncrement;
                             y += yIncrement;
                         }
@@ -183,7 +196,7 @@ namespace ASE_Programming_Language
             if (string.IsNullOrWhiteSpace(commandText)) MessageBox.Show("No command entered.");
             if (command != null)
             {
-                // Check if the command is a graphical command before using graphics
+
                 if (command is CommandDrawCircle)
                 {
                     // Use the Graphics object of the PictureBox
@@ -194,7 +207,6 @@ namespace ASE_Programming_Language
                 }
                 else
                 {
-                    // For non-graphical commands, use the Execute method without Graphics
                     command.Execute(interpreter);
 
                 }
@@ -218,7 +230,11 @@ namespace ASE_Programming_Language
         {
             DrawCompositeShape();
         }
-
+        /// <summary>
+        /// Button for composite shapes.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The event arguments.</param>
         public void DrawCompositeShape()
         {
             Random random = new Random();
@@ -240,7 +256,10 @@ namespace ASE_Programming_Language
 
             }
         }
-
+        // <summary>
+        /// Executes a set of multi-line commands.
+        /// </summary>
+        /// <param name="commandText">The multi-line command text.</param>
         public void ExecuteMultiLineCommands(string commandText)
         {
             var lines = commandText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
@@ -379,7 +398,7 @@ namespace ASE_Programming_Language
         {
 
         }
-        public void DrawConcentricCircles(int baseSize)
+        private void DrawConcentricCircles(int baseSize)
         {
             using (Graphics graphics = pictureBox1.CreateGraphics())
             {
@@ -395,6 +414,9 @@ namespace ASE_Programming_Language
                 }
             }
         }
+        /// <summary>
+        /// Checks the syntax and displays error message for syntax errors.
+        /// </summary>
         public List<string> CheckSyntax(string[] lines)
         {
             List<string> errors = new List<string>();
@@ -442,7 +464,9 @@ namespace ASE_Programming_Language
         }
 
 
-
+        /// <summary>
+        /// Executes commands on commandline.
+        /// </summary>
         private void ExecuteCommands(string[] lines)
         {
             using (Graphics graphics = pictureBox1.CreateGraphics())
@@ -468,6 +492,9 @@ namespace ASE_Programming_Language
             }
         }
 
+        // <summary>
+        /// Clears the content of the PictureBox.
+        /// </summary>
         private void ClearPictureBox()
         {
             pictureBox1.Refresh(); // This will clear the content of the PictureBox
@@ -477,7 +504,11 @@ namespace ASE_Programming_Language
         {
 
         }
-
+        /// <summary>
+        /// Handles the key down event for the command in TextBox.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The key event arguments.</param>
         private void TextBox1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Up)
